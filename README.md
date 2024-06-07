@@ -56,11 +56,11 @@ epsg(las1)
 ```
 En el caso anterior, la función **readLAS()** lee la totalidad del archivo original y traspasa dicha información al nuevo objeto de R (perteneciente a la clase **LAS**). En ocasiones pero, puede interesar únicamente extraer algunos de los atributos que contiene el fichero LiDAR (valores XYZ, intensidad, clasificación, ...)
 
-[![Atributos de un fichero LAS](/image/atributos_las.png)
+![Atributos de un fichero LAS](/image/atributos_las.png)
 
-#### Importando parte del fichero: la selección de atributos
+#### Importando parte del fichero: la selección de atributos -> SELECT
 
-Uno de los argumentos que soporta la función básica readLAS() es la selección de los atributos que se quieren importar. ASí por ejemplo podemos crear un nuevo objeto que contenga únicamente parte los atributos originales:
+Uno de los argumentos que soporta la función básica readLAS() es la selección de los atributos que se quieren importar. El argumento en cuestión lleva por nombre, **select**. Así por ejemplo podemos crear un nuevo objeto que contenga únicamente parte los atributos originales:
 
 ```r
 # seleccionar los atributos a importar
@@ -72,4 +72,38 @@ Lógicamente, la cantidad de atributos que se leen/importan en R afectará a:
 * el tamaño del objeto
 * la cantidad de información y disponible y por consiguiente, lo que podamos hacer con este objeto
 
-[![Tamaño del objeto LAS](/image/peso_las.png)
+![Tamaño del objeto LAS](/image/peso_las.png)
+
+En los ejemplos anteriores se han importado las coordenadas XY y el valor de Z en el primer caso (xyz), y se ha añadido el atributo de clasificación en el segundo (c). A continuación, se muestran las abreviaciones del resto de atributos:
+
+| Abreviación | Atributo               |
+|-------------|------------------------|
+| t           | hora del gps           |
+| a           | ángulo de escaneo      |
+| i           | intensidad             |
+| n           | número de retornos     |
+| r           | número de retorno      |
+| c           | clasificación          |
+| p           | identificador de punto |
+| ...         | ...                    |
+
+#### Importando parte del fichero: la selección de puntos -> FILTER
+
+Además de escoger qué atributos se van a leer, también es posible seleccionar parte de las geometrías que conforman la nube de puntos LiDAR. Para ello, podemos echar mano del argumento **filter**.
+
+```r
+# seleccionar los atributos a importar
+las_xyz <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyz", filter)   # xyz
+las_clasificado <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyzc")   # xyz y clasificación
+```
+
+Con relación a la clasificación de una nube de puntos LiDAR,la referencia es la especificación de la ASPRS (The American Society for Photogrammetry & Remote Sensing):
+
+![Clasificación de puntos lidar](/image/las_classes.png)
+
+Además, para ver todas las posibilidades que adminten los argumentos select y filter que se acaban de ver, basta con ejecutar las funciones:
+
+```r
+readLAS(select = "-help")
+readLAS(filter = "-help")
+```
