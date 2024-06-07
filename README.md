@@ -260,7 +260,7 @@ lidR::plot(mdt_idw)   #representación 2D
 lidR::plot_dtm3d(mdt_idw, bg = "black")   #representación 3D 
 ```
 
-###### Kriging
+##### Kriging
 
 ```r
 # Kriging
