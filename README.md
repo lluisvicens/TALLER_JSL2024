@@ -270,3 +270,22 @@ lidR::plot_dtm3d(mdt_kriging, bg = "black")   # representación 3D
 ```
 
 ![TIN](/image/tin.png)
+
+#### Modelos digitales de superficie
+
+##### Red de triangulos irregulares (TIN)
+```r
+# DSM TIN
+dsmtin <- rasterize_canopy(las1_filtrado, res = 0.5, algorithm = dsmtin())
+lidR::plot(dsmtin)
+lidR::plot_dtm3d(dsmtin)
+```
+##### Algoritmo PITFREE
+
+```r
+# DSM PITFREE
+dsm_pitfree <- rasterize_canopy(las1_filtrado, res = 1, pitfree())
+lidR::plot_dtm3d(dsm_pitfree)
+```
+![DSM2](/image/dsm2.png)
+
