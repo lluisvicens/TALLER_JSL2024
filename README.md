@@ -55,4 +55,4 @@ epsg(las1)
 ```
 En el caso anterior, la función **readLAS()** lee la totalidad del archivo original y traspasa dicha información al nuevo objeto de R (perteneciente a la clase **LAS**). En ocasiones pero, puede interesar únicamente extraer algunos de los atributos que contiene el fichero LiDAR (valores XYZ, intensidad, clasificación, ...)
 
-[![Atributos de un fichero LAS](/images/atributos_las.png)
+[![Atributos de un fichero LAS](/image/atributos_las.png)
