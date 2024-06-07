@@ -38,6 +38,7 @@ library(lidR)   #llamada del paquete lidR
 ```
 
 ### Lectura y comprobaciones básicas sobre los ficheros LAS/LAZ
+#### Importando la totalidad del fichero
 
 Una vez configurado el punto de partida, el siguiente paso consistirá en la lectura del fichero o ficheros LAS/LAZ, para generar los objetos de R que son con os cuales vamos a trabajar. La función principal para la lectura de ficheros LiDAR, es **readLAS()**. Como todas las funciones de R, ésta se compone de varios argumentos posibles que podemos configurar o no, en función de la información que precisemos extraer de los ficheros originales:
 
@@ -56,3 +57,19 @@ epsg(las1)
 En el caso anterior, la función **readLAS()** lee la totalidad del archivo original y traspasa dicha información al nuevo objeto de R (perteneciente a la clase **LAS**). En ocasiones pero, puede interesar únicamente extraer algunos de los atributos que contiene el fichero LiDAR (valores XYZ, intensidad, clasificación, ...)
 
 [![Atributos de un fichero LAS](/image/atributos_las.png)
+
+#### Importando parte del fichero: la selección de atributos
+
+Uno de los argumentos que soporta la función básica readLAS() es la selección de los atributos que se quieren importar. ASí por ejemplo podemos crear un nuevo objeto que contenga únicamente parte los atributos originales:
+
+```r
+# seleccionar los atributos a importar
+las_xyz <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyz")   # xyz
+las_clasificado <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyzc")   # xyz y clasificación
+```
+Lógicamente, la cantidad de atributos que se leen/importan en R afectará a:
+
+* el tamaño del objeto
+* la cantidad de información y disponible y por consiguiente, lo que podamos hacer con este objeto
+
+[![Tamaño del objeto LAS](/image/peso_las.png)
