@@ -200,7 +200,7 @@ print(las1_nowithheld)   # resumen
 las_check(las1_nowithheld)   # validación
 
 # filtrar el objeto anteriormente creado
-las1_filtrado <- filter_poi(las1, Classification != 7)   # lectura
+las1_filtrado <- filter_poi(las1, Classification != 7)   # filtrado
 print(las1_filtrado)   # resumen
 las_check(las1_filtrado)   # validación
 ```
@@ -208,15 +208,6 @@ las_check(las1_filtrado)   # validación
 Sea cual sea el método aplicado, acabaremos por llegar al mismo punto:
 
 ```
-> print(las1_nowithheld)   # resumen
-class        : LAS (v1.2 format 1)
-memory       : 560.2 Mb 
-extent       : 360000, 362000, 4716000, 4718000 (xmin, xmax, ymin, ymax)
-coord. ref.  : ETRS89 / UTM zone 31N 
-area         : 3.98 km²
-points       : 9.18 million points
-density      : 2.31 points/m²
-density      : 1.97 pulses/m²
 > print(las1_filtrado)   # resumen
 class        : LAS (v1.2 format 1)
 memory       : 595.2 Mb 
@@ -226,4 +217,56 @@ area         : 3.98 km²
 points       : 9.18 million points
 density      : 2.31 points/m²
 density      : 1.97 pulses/m²
+> print(las1_nowithheld)   # resumen
+class        : LAS (v1.2 format 1)
+memory       : 560.2 Mb 
+extent       : 360000, 362000, 4716000, 4718000 (xmin, xmax, ymin, ymax)
+coord. ref.  : ETRS89 / UTM zone 31N 
+area         : 3.98 km²
+points       : 9.18 million points
+density      : 2.31 points/m²
+density      : 1.97 pulses/m²
 ```
+Y cabe decir que no siempre ambos sistemas, pueden aplicarse por igual:
+
+```r
+# error!
+las_xyz <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyz")   # lectura
+# Warning message:
+# There are 1496514 points flagged 'withheld'.
+
+las1_nowithheld <- filter_poi(las_xyz, Classification != 7)   # filtrado con error!
+# Error in eval(expr, data, expr_env) : object 'Classification' not found
+```
+La cantidad de atributos que importemos para generar un objeto de la clase LAS, puede determinar en cierto modo las funciones que vayamos a poder aplicar.
+
+### Generación de productos derivados del fichero LAS
+#### Modelos digitales del terreno
+
+##### Red de triangulos irregulares (TIN)
+
+```r
+# TIN
+dtm_tin <- rasterize_terrain(las1_filtrado, res = 1, algorithm = tin())   # interpolación
+lidR::plot(dtm_tin)   # representación 2D
+lidR::plot_dtm3d(dtm = dtm_tin)   # representación 3D
+```
+##### Distancia Inversa Ponderada (IDW)
+
+```r
+# IDW
+mdt_idw <- rasterize_terrain(las1_filtrado , algorithm = knnidw(k = 10L, p = 2))  # interpolación
+lidR::plot(mdt_idw)   #representación 2D
+lidR::plot_dtm3d(mdt_idw, bg = "black")   #representación 3D 
+```
+
+###### Kriging
+
+```r
+# Kriging
+mdt_kriging <- rasterize_terrain(las, algorithm = kriging(k = 40))   # interpolación
+lidR::plot(mdt_kriging)   # representación 2D
+lidR::plot_dtm3d(mdt_kriging, bg = "black")   # representación 3D
+```
+
+![TIN](/image/tin.png)
