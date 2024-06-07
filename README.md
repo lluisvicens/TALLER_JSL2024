@@ -207,7 +207,7 @@ las_check(las1_filtrado)   # validación
 
 Sea cual sea el método aplicado, acabaremos por llegar al mismo punto:
 
-```r
+```
 > print(las1_nowithheld)   # resumen
 class        : LAS (v1.2 format 1)
 memory       : 560.2 Mb 
