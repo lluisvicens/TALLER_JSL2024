@@ -243,6 +243,8 @@ La cantidad de atributos que importemos para generar un objeto de la clase LAS, 
 ### 4.3. Generación de productos derivados del fichero LAS
 #### 4.3.1. Modelos digitales del terreno
 
+Por defecto, el algoritmo **_rasterize_terrain()_** utiliza, para la generación de un modelo digital del terreno, únicamente aquellos puntos que estén clasificados como suelo (2) o agua (9). Así pues bastará con definir la resolución del modelo, y el algoritmo de interpolación a utilizar.
+
 ##### a) Red de triangulos irregulares (TIN)
 
 ```r
@@ -272,6 +274,7 @@ lidR::plot_dtm3d(mdt_kriging, bg = "black")   # representación 3D
 ![TIN](/image/tin.png)
 
 #### 4.3.2.Modelos digitales de superficie
+A diferencia de la función anterior, **_rasterize_canopy()_** utilizará el primer rebote almacenado para generar un modelo digital de superficie. Y del mismo modo que sucedía en el caso de la función rasterize_terrain(), en esta ocasión también disponemos de varios algoritmos para llevar a cabo la interpolación: p2r(), dsmtin(), pitfree().  
 
 ##### Red de triangulos irregulares (TIN)
 ```r
@@ -288,4 +291,40 @@ dsm_pitfree <- rasterize_canopy(las1_filtrado, res = 1, pitfree())
 lidR::plot_dtm3d(dsm_pitfree)
 ```
 ![DSM2](/image/dsm2.png)
+
+## 5. Visualizaciones 3D en R
+
+Además de la función **_plot_dtm3()_** del paquete lidR, existen en R otras opciones para visualizar datos en 3D, como por ejemplo utilizando el paquete **rayshader**.
+
+### 5.1. Trabajando con el paquete rayshader
+Como siempre en R, en caso de ser necesario instalarmos el paquete rayshader y lo activaremos:
+
+```r
+install.packages("rayshader")
+library(rayshader)
+```
+
+A continuación, necesitaremos convertir nuestro objeto raster (SpatRaster)  en una matriz, con ayuda de la función **_raster_to_matrix()_**:
+
+```r
+# aplicar textura a la matriz, y visulizar en 2D
+matriz_mds |> 
+   sphere_shade(texture = "desert") |> 
+   plot_map()
+
+# podemos añadir una capa o layer de iluminación/sombras
+matriz_mds |> 
+   sphere_shade(texture = "desert") |> 
+   add_shadow(ray_shade(matriz_mds), 0.5) |> 
+   plot_map()
+
+# y generar un escenario 3D
+matriz_mds |> 
+   sphere_shade(texture = "desert") |> 
+   add_shadow(ray_shade(matriz_mds, zscale = 3), 0.5) |> 
+   add_shadow(ambient_shade(matriz_mds), 0) |> 
+   plot_3d(matriz_mds, zscale = 10, fov = 0, theta = 135, zoom = 0.75, phi = 45, windowsize = c(1000, 800))
+```
+
+## 6. Visualizaciones 3D en Blender
 
