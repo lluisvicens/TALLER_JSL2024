@@ -1,15 +1,15 @@
 # TALLER_JSL2024
-## Introducción al análisis de datos lidar con R, y modelización 3d con Blender.
+## 1. Introducción al análisis de datos lidar con R, y modelización 3d con Blender.
 
 A largo de este breve taller introductorio, se mostrará un flujo de trabajo básico, para el trabajo con datos LiDAR desde el entorno de R, con el objetovo de generar un modelo digital del terreno y un modelo digital de superficie que posteriormente, se visualizará en forma de escenario tridimensional, utilizando para ello el programa de diseño 3d Blender.
 
-## Software necesario para el desarrollo del taller:
+## 2. Software necesario para el desarrollo del taller:
 
 * **[R](https://www.r-project.org/)** y **[Rstudio](https://posit.co/download/rstudio-desktop/)**
 * **[QGIS](https://qgis.org/en/site/)**
 * **[Blender](https://www.blender.org/)**
 
-## Datos que se utilizarán en el taller:
+## 3. Datos que se utilizarán en el taller:
 
 Básicamente se van a utilizar datos LiDAR, que puedan descargarse de cualquier geoportal abierto de datos tales como el visor de descargas del **[ICGC](http://www.icc.cat/appdownloads/)** o el Centro de Descargas del **[CNIG](https://centrodedescargas.cnig.es/CentroDescargas/index.jsp)**, entre otros.
 
@@ -18,8 +18,8 @@ Para el presente taller podéis descargar los datos desde aquí:
 * [1 fichero LAZ](https://drive.google.com/file/d/11XUt-XEteQU_O-_m4G38X1BKu6lyam8W/view?usp=sharing)
 * [conjunto de ficheros LAZ](https://drive.google.com/file/d/161cLiO64T_0-hW5k2JQh1QBFw-gw9FmO/view?usp=sharing)
 
-## Trabajando con datos LiDAR desde R
-### Configurando el espacio de trabajo
+## 4. Trabajando con datos LiDAR desde R
+### 4.1. Configurando el espacio de trabajo
 
 R se trabajará desde el entorno de desarrollo RStudio, que facilita sobre manera la gestión de ficheros, scripts, carpetas, proyectos y datos, así como la visualización de los mpas, o gráficos. Así pues, abriremos RStudio y:
 
@@ -37,8 +37,8 @@ install.packages("lidR)   #instalación del paquete lidR
 library(lidR)   #llamada del paquete lidR
 ```
 
-### Lectura y comprobaciones básicas sobre los ficheros LAS/LAZ
-#### Importando la totalidad del fichero
+### 4.2. Lectura y comprobaciones básicas sobre los ficheros LAS/LAZ
+#### 4.2.1. Importando la totalidad del fichero
 
 Una vez configurado el punto de partida, el siguiente paso consistirá en la lectura del fichero o ficheros LAS/LAZ, para generar los objetos de R que son con os cuales vamos a trabajar. La función principal para la lectura de ficheros LiDAR, es **_readLAS()_**. Como todas las funciones de R, ésta se compone de varios argumentos posibles que podemos configurar o no, en función de la información que precisemos extraer de los ficheros originales:
 
@@ -58,7 +58,7 @@ En el caso anterior, la función **_readLAS()_** lee la totalidad del archivo or
 
 ![Atributos de un fichero LAS](/image/atributos_las.png)
 
-#### Importando parte del fichero: la selección de atributos -> SELECT
+#### 4.2.2. Importando parte del fichero: la selección de atributos -> SELECT
 
 Uno de los argumentos que soporta la función básica **_readLAS()_** es la selección de los atributos que se quieren importar. El argumento en cuestión lleva por nombre, ```select```. Así por ejemplo podemos crear un nuevo objeto que contenga únicamente parte los atributos originales:
 
@@ -87,7 +87,7 @@ En los ejemplos anteriores se han importado las coordenadas XY y el valor de Z e
 | p           | identificador de punto |
 | ...         | ...                    |
 
-#### Importando parte del fichero: la selección de puntos -> FILTER
+#### 4.2.3. Importando parte del fichero: la selección de puntos -> FILTER
 
 Además de escoger qué atributos se van a leer, también es posible seleccionar parte de las geometrías que conforman la nube de puntos LiDAR. Para ello, podemos echar mano del argumento ```filter```.
 
@@ -120,7 +120,7 @@ Para consultar todas las posibilidades que admite el argumento filter, basta con
 readLAS(filter = "-help")
 ```
 
-#### La validación de los objetos creados
+#### 4.2.4. La validación de los objetos creados
 
 La validación de los objetos creados con la función readLAS() o dicho de otro modo, la confirmación que los datos son validos para su procesamiento y uso para generar por ejemplo, un modelo digital del terreno, pasa por comprobar si estos objetos o datos, se ajustan a las especificaciones emitidas por la ASPRS. La función encargada de dicha validación es **_las_check()_:**
 
@@ -164,7 +164,7 @@ Por lo general se tata de puntos que son considerados errores o ruido. Frente a 
 
 En cualquier caso, empezaremos por centrar nuestra atención sobre el primer error o aviso: **los puntos duplicados**.
 
-#### Eliminar los puntos duplicados en un fichero LAS
+#### 4.2.5. Eliminar los puntos duplicados en un fichero LAS
 
 Para eliminar los puntos que estén duplicados en una nube de puntos, basta con utilizar la función _**filter_duplicates()**_. El nuevo objeto que se va a generar, va a estar libre de estos duplicados, pudiéndolo comprobar mediante la aplicación de la función de validación de datos.
 
@@ -186,7 +186,7 @@ En el resultado se aprecia que los 1943 puntos duplicados ya no están presentes
   - Checking user data attribute... ✓
 ```
 
-#### Eliminar los puntos etiquetados como 'withheld'
+#### 4.2.6. Eliminar los puntos etiquetados como 'withheld'
 
 En el contexto de este taller, para deshacernos de estos puntos no confiables, podemos utilizar una doble vía:
 
@@ -240,10 +240,10 @@ las1_nowithheld <- filter_poi(las_xyz, Classification != 7)   # filtrado con err
 ```
 La cantidad de atributos que importemos para generar un objeto de la clase LAS, puede determinar en cierto modo las funciones que vayamos a poder aplicar.
 
-### Generación de productos derivados del fichero LAS
-#### Modelos digitales del terreno
+### 4.3. Generación de productos derivados del fichero LAS
+#### 4.3.1. Modelos digitales del terreno
 
-##### Red de triangulos irregulares (TIN)
+##### a) Red de triangulos irregulares (TIN)
 
 ```r
 # TIN
@@ -251,7 +251,7 @@ dtm_tin <- rasterize_terrain(las1_filtrado, res = 1, algorithm = tin())   # inte
 lidR::plot(dtm_tin)   # representación 2D
 lidR::plot_dtm3d(dtm = dtm_tin)   # representación 3D
 ```
-##### Distancia Inversa Ponderada (IDW)
+##### b) Distancia Inversa Ponderada (IDW)
 
 ```r
 # IDW
@@ -260,7 +260,7 @@ lidR::plot(mdt_idw)   #representación 2D
 lidR::plot_dtm3d(mdt_idw, bg = "black")   #representación 3D 
 ```
 
-##### Kriging
+##### c) Kriging
 
 ```r
 # Kriging
@@ -271,7 +271,7 @@ lidR::plot_dtm3d(mdt_kriging, bg = "black")   # representación 3D
 
 ![TIN](/image/tin.png)
 
-#### Modelos digitales de superficie
+#### 4.3.2.Modelos digitales de superficie
 
 ##### Red de triangulos irregulares (TIN)
 ```r
