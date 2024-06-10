@@ -15,8 +15,8 @@ Básicamente se van a utilizar datos LiDAR, que puedan descargarse de cualquier 
 
 Para el presente taller podéis descargar los datos desde aquí:
 
-* [1 fichero LAZ]()
-* [conjunto de ficheros LAZ]()
+* [1 fichero LAZ](https://drive.google.com/file/d/11XUt-XEteQU_O-_m4G38X1BKu6lyam8W/view?usp=sharing)
+* [conjunto de ficheros LAZ](https://drive.google.com/file/d/161cLiO64T_0-hW5k2JQh1QBFw-gw9FmO/view?usp=sharing)
 
 ## Trabajando con datos LiDAR desde R
 ### Configurando el espacio de trabajo
