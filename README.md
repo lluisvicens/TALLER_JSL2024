@@ -374,3 +374,5 @@ writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
 * Desde el menú Add > camera se añade una cámara al escenario. Este elemento es indispensable para poder renderizar el escenario. Para comprobar que es lo que está observando la cámara (es decir, que parte del escenario se va a renderizar y desde que perspectiva) basta con presionar la tecla 0.
 * Se puede configurar la vista del escenario de manera manual y a continuación, activar el menú View > Align View > Align Active Camera to View, y acabar de ajustar manualmente la perspectiva seleccionando la cámara en el panel de objetos y presionando la tecla **G**.
 * Para ver una primera renderización del escenario, basta con presionar la tecla **F12**.
+
+#### 6.2.5. Modificar la paleta de colores
