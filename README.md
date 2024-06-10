@@ -328,3 +328,49 @@ matriz_mds |>
 
 ## 6. Visualizaciones 3D en Blender
 
+### 6.1. La preparación de los datos
+Antes de pasar a trabajar con Blender para recrear un escenario 3D, pasaremos por una breve tarea de preparación de los datos a fin de aprovechar al máximo las capacidades de Blender. Ello implicará guardar el modelo digital del terreno o de elevaciones, como una imagen de valores enteros de 16 bits sin signo (UInt16), con el objetivo de disponer de una nueva capa con valores comprenidos entre 0 y 65535. Esta transformación, puede hacerse des de QGIs, por ejemplo (mediante la calculadora raster) o bien desde R. Para realizar dicha transformación hay que aplicar la formula "**_(valor del raster - valor mínimo) / (valor máximo - valor mínimo) * 65535_**":
+
+```r
+# obtener el mínimo y máximo de la image
+min_val <- minmax(dsm_pitfree)[1]
+max_val <- minmax(dsm_pitfree)[2]
+
+# álgebra de mapas
+dsm_blender <- (dsm_pitfree - min_val) / (max_val - min_val) * 65535
+
+# exportar objeto raster a capa raster
+writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
+```
+
+### 6.2. La configuración de Blender, paso a paso
+
+#### 6.2.1. El espacio de trabajo
+* Al abrir el programa, se seleccionan todos los elementos del escenario que aparecen por defecto (un cubo, una fuente de luz y una cámara), y se eliminan.
+* En el menú Edit > Preferences, hay que activar la extensión **Import Images as Planes**.
+
+#### 6.2.2. La importación del modelo digital de superficie o del terreno
+* A continuación, debe debe importarse el modelo digital preparado anteriormente, en forma de un nuevo plano. Para ello basta con dirigirse al menú File > Import > Images as Planes. Se selecciona el fichero **dsm_blender.tif** y se acepta.
+* Para evaluar el proceso anterior, se puede conmutar la vista entre **sólido**, **material** y **_rendered_**.
+* En el apartado **Render**, hay que cambiar el parámetro **Render Engine** a **Cycles** y el **Feature Set**, configurarlo como **Experimental**.
+* El siguiente paso consistirá en añadir al plano de trabajo, todos nodos que sean necesarios para poder **"deformar"** el plano y representar el relieve del modelo digital. Para ello, en el apartado **Modifiers**, hay que añadir un nuevo modificador (Add Modifier > Generate > Subdivision surface), activar el botón **Simple** y activar la casilla **Adaptative Subdivision**.
+* De nuevo en el apartado **Render** para mejorar la velocidad de representación durante la fase de diseño, se modifica el valor presente en el parámetro Viewport > Max samples a **512**, y el valor del parámetro Render > Max samples a **30**. Estos valores podrán modificarse segun sea conveniente.
+* Se divide la interfaz de Blender en dos espacios. El primero quedará configurado como **3D Viewport** y el segundo, como **Shade Editor**.
+* En el apartado **Shade Editor** se observan tres piezas distintas: el modelo digital, un algoritmo que configura cómo se va a _renderizar_ el modelo, y el objeto de salida.
+
+#### 6.2.3. Convertir el plano en un relieve
+* Llegados a este punto, es el momento de aplicar las deformaciones al plano de trabajo, en base a la interpretación de la paleta de colores y de los valores del modelo digital de superficie importado como plano.
+* Se añade un nuevo nodo desde el menú Add > Vector > Displacement. Y se enlaza el conector **Color** del MDS al conector **Height** del módulo encargado de configurar el desplazamiento, y el conector **Displacement** de este último, al conector **Displacement** del nodo **Material Output**.
+
+![blender1](/image/blender1.png)
+
+* Al conmutar la vista de material a renderizado, aun no puede apreciarse el desplazamiento que ha sufrido el plano orginal. Para ello, en el apartado **Material > Settings**, deberá modificarse el valor del parámetro **Displacement** de **Bump only** a **Displacement only**. A continuación hay que ajustar el valor de exageración en el parámetro **Scale** del nodo **Displacement**.
+
+#### 6.2.4. Añadir la iluminación
+* Desde el menú Add > Light > Sun se añade la fuente de luz necesaria para ilumina el escenario. En el apartado **Data** (icono en forma de bombilla eléctrica) pueden configurarse aspectos tales como la intensidad de la luz (por defecto 1) o el valor de ángulo (por defecto).
+* En el apartado de propiedades, se pueden configurar los parámetros de localización, rotación, o escalado, por ejemplo. Los valores de **Rotation** pueden configurarse del siguiente modo (x = 0, y = 45, z = 135). Estos valores pueden configurarse de manera manual, seleccionando y arrastrando el punto de luz visible en el escenario.
+
+#### 6.2.5. Añadir la cámara
+* Desde el menú Add > camera se añade una cámara al escenario. Este elemento es indispensable para poder renderizar el escenario. Para comprobar que es lo que está observando la cámara (es decir, que parte del escenario se va a renderizar y desde que perspectiva) basta con presionar la tecla 0.
+* Se puede configurar la vista del escenario de manera manual y a continuación, activar el menú View > Align View > Align Active Camera to View, y acabar de ajustar manualmente la perspectiva seleccionando la cámara en el panel de objetos y presionando la tecla **G**.
+* Para ver una primera renderización del escenario, basta con presionar la tecla **F12**.
