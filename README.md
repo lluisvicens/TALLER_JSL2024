@@ -446,7 +446,8 @@ Ahora sí, es el turno de **Blender**.
 * El el caso particular de la fotografía aérea, pueden obtenerse ortofotografías de la zona que se está trabajando con ayuda del complemento ICGC de QGIS. Se tratará pues de descargar la capa, y aplicar un recorte a la capa utilizando la extensión del mdt.
 * En el caso por ejemplo de las láminas de agua, pueden digitalizarse manualmente (o extraerse mediante clasificación, capa de cubiertas del suelo, ...) y rasterizar la capa vectorial utilizando la extensión y resolución de algunas de las capas raster ya existentes. Deberá aplicarse un color a las láminas de agua, y guardar la capa como una imagen renderizada.
 * Con el objetivo de aligerar el proceso, en el contexto de este taller, estas capas auxiliares pueden descargarse desde el **[siguiente enlace](https://drive.google.com/file/d/1fKwn9fA_OmXd5dnCQPkxt9KzJNK0JEBz/view?usp=sharing)**.
-* En Blender de nuevo, dentro del panel del **Shader Editor**, hay que añadir dos nuevas texturas de imagen o bien sustituir alguna de las creadas inicialmente con la paleta de colores, con la imagen del ortofotomapa y la máscara de los lagos. De lo que se trata es de combinar ambas texturas por lo que entre estos dos nuevos nodos y el nodo relativo al shader, habrá que incorporar un nuevo nodo Add > Color > Mix color y establecer las conexiones. 
+* En Blender de nuevo, dentro del panel del **Shader Editor**, hay que añadir dos nuevas texturas de imagen o bien sustituir alguna de las creadas inicialmente con la paleta de colores, con la imagen del ortofotomapa y la máscara de los lagos. De lo que se trata es de combinar ambas texturas por lo que entre estos dos nuevos nodos y el nodo relativo al shader, habrá que incorporar un nuevo nodo Add > Color > Mix color y establecer las conexiones pertinentes. 
 
 ![mix_color](/image/mix_color.png)
 
+![escenario3](/image/escenario3.png)
