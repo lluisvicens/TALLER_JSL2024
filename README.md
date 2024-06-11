@@ -326,9 +326,62 @@ matriz_mds |>
    plot_3d(matriz_mds, zscale = 10, fov = 0, theta = 135, zoom = 0.75, phi = 45, windowsize = c(1000, 800))
 ```
 
-## 6. Visualizaciones 3D en Blender
+## 6. Trabajando con varias hojas LiDAR con lidR
 
-### 6.1. La preparación de los datos
+Hasta el momento se ha visto cómo trabajar con una sola hoja de datos LiDAR. De todos modos,lo normal es trabajar con extensiones de terreno superiores a lo abarca una única hoja de datos LiDAR, por que en ocasiones deberemos trabajar con un conjunto de ellas. En estos castos, se deberá trabajar con otro tipo de objeto del paquete lidR, perteneciente a la clase **LAScatalog**.
+
+Para empezar, deberemos leer los ficheros LiDAR contenidos en una carpeta para poder generar el objeto de trabajo:
+
+```r
+library(lidR)
+library(terra)
+
+setwd("/home/lluis/TEMP/TALLER_JSL2024/datos_lidar/")
+
+# creación de un catálogo
+lasCat <- readLAScatalog("hojas_laz/", filter = "-drop_withheld")
+
+class(lasCat)
+lasCat   # ver características del catálogo
+plot(lasCat)   # visualizamos la disposición de hojas LiDAR
+
+las_check(lasCat)   # validación del catálogo
+```
+
+Una vez agrupadas todas las hojas LiDAR en un objeto de tipo catálogo, será el momento de definir los fragmentos, o teselas en las que se dividirá el catálogo generado. Podemos procesar el catálogo hoja a hoja siguiendo la extensión de las hojas originlaes, o bien con ayuda de las funciones **_opt_chunk_size()_** y **_opt_chunk_buffer()_** definir un nuevo tamaño de tesela y la zona de solape entre hojas a fin de evitar las posibles temidas líneas de separación entre hojas. 
+
+```r
+# definición del tamaño de las hojas o teselas, y el solape
+opt_chunk_size(lasCat) <- 1200
+opt_chunk_buffer(lasCat) <- 50
+
+# y visualizamos la nueva disposición de hojas
+plot(lasCat, chunk_pattern = TRUE)
+```
+Y procesamos el catálogo para generar, en este caso, un modelo digital del terreno utilizando para ello el algoritmo **_tin()_**
+
+```r
+# generación del modelo digital de elevaciones
+lasCat_class <- rasterize_terrain(lasCat, res = 1,algorithm = tin())
+
+plot(lasCat_class)   # gráfico 2D
+plot_dtm3d(lasCat_class)   # gráfico 3D
+```
+
+
+min_val <- minmax(lasCat_class)[1]
+max_val <- minmax(lasCat_class)[2]
+
+mdtLasCat <- (lasCat_class - min_val) / (max_val - min_val) * 65535
+
+writeRaster(lasCat_class, "/home/lluis/mdt_lasCat_original.tif", datatype = 'INT2U', overwrite = TRUE)
+writeRaster(mdtLasCat, "/home/lluis/mdt_lasCat.tif", datatype = 'INT2U', overwrite = TRUE)
+
+
+
+## 7. Visualizaciones 3D en Blender
+
+### 7.1. La preparación de los datos
 Antes de pasar a trabajar con Blender para recrear un escenario 3D, pasaremos por una breve tarea de preparación de los datos a fin de aprovechar al máximo las capacidades de Blender. Ello implicará guardar el modelo digital del terreno o de elevaciones, como una imagen de valores enteros de 16 bits sin signo (UInt16), con el objetivo de disponer de una nueva capa con valores comprenidos entre 0 y 65535. Esta transformación, puede hacerse des de QGIs, por ejemplo (mediante la calculadora raster) o bien desde R. Para realizar dicha transformación hay que aplicar la formula "**_(valor del raster - valor mínimo) / (valor máximo - valor mínimo) * 65535_**":
 
 ```r
@@ -343,13 +396,17 @@ dsm_blender <- (dsm_pitfree - min_val) / (max_val - min_val) * 65535
 writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
 ```
 
-### 6.2. La configuración de Blender, paso a paso
 
-#### 6.2.1. El espacio de trabajo
+
+
+
+### 7.2. La configuración de Blender, paso a paso
+
+#### 7.2.1. El espacio de trabajo
 * Al abrir el programa, se seleccionan todos los elementos del escenario que aparecen por defecto (un cubo, una fuente de luz y una cámara), y se eliminan.
 * En el menú Edit > Preferences, hay que activar la extensión **Import Images as Planes**.
 
-#### 6.2.2. La importación del modelo digital de superficie o del terreno
+#### 7.2.2. La importación del modelo digital de superficie o del terreno
 * A continuación, debe debe importarse el modelo digital preparado anteriormente, en forma de un nuevo plano. Para ello basta con dirigirse al menú File > Import > Images as Planes. Se selecciona el fichero **dsm_blender.tif** y se acepta.
 * Para evaluar el proceso anterior, se puede conmutar la vista entre **sólido**, **material** y **_rendered_**.
 * En el apartado **Render**, hay que cambiar el parámetro **Render Engine** a **Cycles** y el **Feature Set**, configurarlo como **Experimental**.
@@ -358,7 +415,7 @@ writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
 * Se divide la interfaz de Blender en dos espacios. El primero quedará configurado como **3D Viewport** y el segundo, como **Shade Editor**.
 * En el apartado **Shade Editor** se observan tres piezas distintas: el modelo digital, un algoritmo que configura cómo se va a _renderizar_ el modelo, y el objeto de salida.
 
-#### 6.2.3. Convertir el plano en un relieve
+#### 7.2.3. Convertir el plano en un relieve
 * Llegados a este punto, es el momento de aplicar las deformaciones al plano de trabajo, en base a la interpretación de la paleta de colores y de los valores del modelo digital de superficie importado como plano.
 * Se añade un nuevo nodo desde el menú Add > Vector > Displacement. Y se enlaza el conector **Color** del MDS al conector **Height** del módulo encargado de configurar el desplazamiento, y el conector **Displacement** de este último, al conector **Displacement** del nodo **Material Output**.
 
@@ -366,13 +423,13 @@ writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
 
 * Al conmutar la vista de material a renderizado, aun no puede apreciarse el desplazamiento que ha sufrido el plano orginal. Para ello, en el apartado **Material > Settings**, deberá modificarse el valor del parámetro **Displacement** de **Bump only** a **Displacement only**. A continuación hay que ajustar el valor de exageración en el parámetro **Scale** del nodo **Displacement**.
 
-#### 6.2.4. Añadir la iluminación
+#### 7.2.4. Añadir la iluminación
 * Desde el menú Add > Light > Sun se añade la fuente de luz necesaria para ilumina el escenario. En el apartado **Data** (icono en forma de bombilla eléctrica) pueden configurarse aspectos tales como la intensidad de la luz (por defecto 1) o el valor de ángulo (por defecto).
 * En el apartado de propiedades, se pueden configurar los parámetros de localización, rotación, o escalado, por ejemplo. Los valores de **Rotation** pueden configurarse del siguiente modo (x = 0, y = 45, z = 135). Estos valores pueden configurarse de manera manual, seleccionando y arrastrando el punto de luz visible en el escenario.
 
-#### 6.2.5. Añadir la cámara
+#### 7.2.5. Añadir la cámara
 * Desde el menú Add > camera se añade una cámara al escenario. Este elemento es indispensable para poder renderizar el escenario. Para comprobar que es lo que está observando la cámara (es decir, que parte del escenario se va a renderizar y desde que perspectiva) basta con presionar la tecla 0.
 * Se puede configurar la vista del escenario de manera manual y a continuación, activar el menú View > Align View > Align Active Camera to View, y acabar de ajustar manualmente la perspectiva seleccionando la cámara en el panel de objetos y presionando la tecla **G**.
 * Para ver una primera renderización del escenario, basta con presionar la tecla **F12**.
 
-#### 6.2.5. Modificar la paleta de colores
+#### 7.2.6. Modificar la paleta de colores
