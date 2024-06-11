@@ -56,23 +56,23 @@ En el caso anterior, la función **_readLAS()_** lee la totalidad del archivo or
 
 ![Atributos de un fichero LAS](/image/atributos_las.png)
 
-#### 4.2.2. Importar parte del fichero: la selección de atributos -> SELECT
+#### 4.2.2. Importar parte del fichero (I). La selección de atributos: SELECT
 
 Uno de los argumentos que soporta la función básica **_readLAS()_**, es la selección de los atributos que se quieren leer/importar. El argumento en cuestión lleva por nombre, ```select```. Así por ejemplo, puede crearse un nuevo objeto que contenga únicamente, parte los atributos originales:
 
 ```r
-# seleccionar los atributos a importar
+# seleccionar los atributos a leer/importar
 las_xyz <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyz")   # xyz
 las_clasificado <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz", select = "xyzc")   # xyz y clasificación
 ```
-Lógicamente, la cantidad de atributos que se leen/importan en R afectará a:
+Lógicamente, la cantidad de atributos que se leen/importan en R afectará:
 
-* el tamaño del objeto
-* la cantidad de información y disponible y por consiguiente, lo que podamos hacer con este objeto
+* al tamaño del objeto,
+* y a la cantidad de información disponible y, por consiguiente, lo que podamos hacer con este objeto.
 
 ![Tamaño del objeto LAS](/image/peso_las.png)
 
-En los ejemplos anteriores se han importado las coordenadas XY y el valor de Z en el primer caso (xyz), y se ha añadido el atributo de clasificación en el segundo (c). A continuación, se muestran las abreviaciones del resto de atributos:
+En los ejemplos anteriores se han importado las coordenadas XY y el valor de Z en el primer caso (xyz), y se ha añadido el atributo de clasificación en el segundo (c). A continuación, se muestran algunas de las abreviaciones del resto de atributos posibles:
 
 | Abreviación | Atributo               |
 |-------------|------------------------|
@@ -85,7 +85,7 @@ En los ejemplos anteriores se han importado las coordenadas XY y el valor de Z e
 | p           | identificador de punto |
 | ...         | ...                    |
 
-#### 4.2.3. Importando parte del fichero: la selección de puntos -> FILTER
+#### 4.2.3. Importar parte del fichero (II). La selección de puntos -> FILTER
 
 Además de escoger qué atributos se van a leer, también es posible seleccionar parte de las geometrías que conforman la nube de puntos LiDAR. Para ello, podemos echar mano del argumento ```filter```.
 
