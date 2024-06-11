@@ -439,8 +439,10 @@ Ahora sí, es el turno de **Blender**.
 * Por lo que respecta a la cámara, antes de renderizar la nueva escena, si se quiere mantener una cámara zenital y añadir una nueva cámara de perspectiva, puede hacerse desde el menú Add > Camera.
 * Add > Converter > Color ramp
 
+![escenario](/image/escenario0.png)
+
 ### 7.2.7 Añadir una imágen aérea, y otros elementos sobre el relieve
 * Del mismo modo que puede configurarse una paleta de colores
 
 
-![escenario](/image/escenario.png)
+
