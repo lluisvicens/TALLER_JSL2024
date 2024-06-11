@@ -451,3 +451,7 @@ Ahora sí, es el turno de **Blender**.
 ![mix_color](/image/mix_color.png)
 
 ![escenario3](/image/escenario3.png)
+
+![ejemplo](/image/ejemplo.png)
+
+![escenario4](/image/escenario4.png)
