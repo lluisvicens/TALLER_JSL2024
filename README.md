@@ -1,7 +1,7 @@
 # TALLER_JSL2024
 ## 1. Introducción al análisis de datos lidar con R, y modelización 3d con Blender.
 
-A largo de este breve taller introductorio, se mostrará un flujo de trabajo básico, para el trabajo con datos LiDAR desde el entorno de R, con el objetovo de generar un modelo digital del terreno y un modelo digital de superficie que posteriormente, se visualizará en forma de escenario tridimensional, utilizando para ello el programa de diseño 3d Blender.
+El motivo que persigue este breve taller introductorio, es mostrar un flujo de trabajo elemental, para el procesado de datos LiDAR desde el entorno de R. El objetivo será generar un modelo digital del terreno y un modelo digital de superficie que posteriormente, se podrá visualizar en forma de escenario tridimensional, utilizando para ello el programa de diseño 3d **Blender**.
 
 ## 2. Software necesario para el desarrollo del taller:
 
@@ -11,56 +11,54 @@ A largo de este breve taller introductorio, se mostrará un flujo de trabajo bá
 
 ## 3. Datos que se utilizarán en el taller:
 
-Básicamente se van a utilizar datos LiDAR, que puedan descargarse de cualquier geoportal abierto de datos tales como el visor de descargas del **[ICGC](http://www.icc.cat/appdownloads/)** o el Centro de Descargas del **[CNIG](https://centrodedescargas.cnig.es/CentroDescargas/index.jsp)**, entre otros.
+Básicamente se van a utilizar datos LiDAR, que pueden descargarse de cualquier geoportal de datos abiertos tales como el visor de descargas del **[ICGC](http://www.icc.cat/appdownloads/)** o el Centro de Descargas del **[CNIG](https://centrodedescargas.cnig.es/CentroDescargas/index.jsp)**, entre otros.
 
-Para el presente taller podéis descargar los datos desde aquí:
+Para el presente taller podéis, descargar los datos desde aquí (fuente de los datos: ICGC):
 
 * [1 fichero LAZ](https://drive.google.com/file/d/11XUt-XEteQU_O-_m4G38X1BKu6lyam8W/view?usp=sharing)
 * [conjunto de ficheros LAZ](https://drive.google.com/file/d/161cLiO64T_0-hW5k2JQh1QBFw-gw9FmO/view?usp=sharing)
 
 ## 4. Trabajando con datos LiDAR desde R
-### 4.1. Configurando el espacio de trabajo
+### 4.1. Configurar el espacio de trabajo
 
-R se trabajará desde el entorno de desarrollo RStudio, que facilita sobre manera la gestión de ficheros, scripts, carpetas, proyectos y datos, así como la visualización de los mpas, o gráficos. Así pues, abriremos RStudio y:
+R se trabajará desde el entorno de desarrollo RStudio, que facilita sobremanera la gestión de ficheros, _scripts_, carpetas, proyectos y datos, así como la propia visualización de los mapas, capas o gráficos. Así pues, abriremos RStudio y empezaremos por configurar el entorno de trabajo, bien indicando cual es el **directorio de trabajo** -_setwd()_- o bien, configurando un proyecto desde cero (_.Rproj_). También necesitaremos crear un _script_ de R.
 
-* podemos configurar el entorno de trabajo bien indicando cual es el **directorio de trabajo** -_setwd()_- o bien, configurando un proyecto desde zero (_.Rproj_). Tabién será preciso crear un nuevo script de R.
 ```R
-setwd("ruta/de/acceso/a/los/datos")  #establecer directorio de trabajo
-getwd() #comprobación del working directory
+setwd("ruta/de/acceso/a/los/datos")   # establecer la ruta al directorio de trabajo
+getwd()   # comprobar la ruta al directorio de trabajo
 ```
 
-* instalar los paquetes necesarios: **lidR**
-* activar el paquete **lidR**
+A continuación, se instalará y activará el paquete con el cual se va a trabajar: **lidR**
 
 ```R
-install.packages("lidR)   #instalación del paquete lidR
-library(lidR)   #llamada del paquete lidR
+install.packages("lidR)   # instalación del paquete lidR
+library(lidR)   # llamada del paquete lidR
 ```
 
 ### 4.2. Lectura y comprobaciones básicas sobre los ficheros LAS/LAZ
-#### 4.2.1. Importando la totalidad del fichero
+#### 4.2.1. Lectura de un fichero LAS/LAZ
 
-Una vez configurado el punto de partida, el siguiente paso consistirá en la lectura del fichero o ficheros LAS/LAZ, para generar los objetos de R que son con os cuales vamos a trabajar. La función principal para la lectura de ficheros LiDAR, es **_readLAS()_**. Como todas las funciones de R, ésta se compone de varios argumentos posibles que podemos configurar o no, en función de la información que precisemos extraer de los ficheros originales:
+Una vez configurado el punto de partida, el siguiente paso consiste en la lectura del fichero o ficheros LAS/LAZ, y la creación del correspondiente objeto de R que contendrá toda la información. La función del paquete **lidR** que permite la lectura de ficheros LiDAR, es **_readLAS()_**. Como todas las funciones de R, ésta se compone de varios argumentos posibles que pueden configurarse o no, en función de la información que precisemos extraer de los ficheros originales:
 
 ```R
-# importar 1 fichero las/las: opción básica
+# importar 1 fichero las/laz: opción básica
 las1 <- readLAS("datos_lidar/1_fichero_laz/LIDARCATv02ls12f360716ed02.laz")
 
-# recuperamos información básica del objeto recién creado:
-print(las1)
+# recuperar información básica del objeto recién creado:
+print(las1)   # información básica
 summary(las1)   # información extendida
 
-# comprobamos CRS, EPSG, ...
+# comprobar el sistema de referencia de coordenadas
 crs(las1)
 epsg(las1)
 ```
-En el caso anterior, la función **_readLAS()_** lee la totalidad del archivo original y traspasa dicha información al nuevo objeto de R (perteneciente a la clase **LAS**). En ocasiones pero, puede interesar únicamente extraer algunos de los atributos que contiene el fichero LiDAR (valores XYZ, intensidad, clasificación, ...)
+En el caso anterior, la función **_readLAS()_** lee la totalidad del archivo original, y traspasa dicha información al nuevo objeto de R (perteneciente a la clase **LAS**). En ocasiones pero, puede interesar únicamente extraer algunos de los atributos que contiene el fichero LiDAR (valores XYZ, intensidad, clasificación, ...)
 
 ![Atributos de un fichero LAS](/image/atributos_las.png)
 
-#### 4.2.2. Importando parte del fichero: la selección de atributos -> SELECT
+#### 4.2.2. Importar parte del fichero: la selección de atributos -> SELECT
 
-Uno de los argumentos que soporta la función básica **_readLAS()_** es la selección de los atributos que se quieren importar. El argumento en cuestión lleva por nombre, ```select```. Así por ejemplo podemos crear un nuevo objeto que contenga únicamente parte los atributos originales:
+Uno de los argumentos que soporta la función básica **_readLAS()_**, es la selección de los atributos que se quieren leer/importar. El argumento en cuestión lleva por nombre, ```select```. Así por ejemplo, puede crearse un nuevo objeto que contenga únicamente, parte los atributos originales:
 
 ```r
 # seleccionar los atributos a importar
@@ -433,3 +431,6 @@ writeRaster(dsm_blender,"datos_lidar/dsm_blender.tif", datatype  = 'INT2U')
 * Para ver una primera renderización del escenario, basta con presionar la tecla **F12**.
 
 #### 7.2.6. Modificar la paleta de colores
+
+
+![escenario](/image/escenario.png)
