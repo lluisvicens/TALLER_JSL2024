@@ -433,7 +433,14 @@ Ahora sí, es el turno de **Blender**.
 * Para configurar un plano zenita, basta con configurar la capa de **Perspective** a **Orthogonal**, presionar la tecla 7 para obtener uan visión desde arriba (top) y a continuación, activar el menú View > Align View > Align Active Camera to View. De nuevo en las propiedades de la cámara, se puede ajustar la vista con el parámetro **Orthographic Scale**.
 
 #### 7.2.6. Añadir una paleta de paleta de colores
-* Para llevar a cabo esta operación, existen dos posibilidades (como mínimo!) 
+* Para llevar a cabo esta operación, existen dos posibilidades (como mínimo!): diseñar una paleta de colores en Blender, o bien hacer el trabajo en QGIS, por ejemplo.
+* Con QGIS abierto, hay que cargar el modelo digital del terreno con el cual se está trabajando, y aplicar una paleta de colores predefinida como por ejemplo las que hay accesibles en el catálogo **cpt-city**. Una vez aplicada la paleta escogida al mdt, hay que exportar la capa(o capas), como una imágenen 'renderizada', para que se guarde el estilo aplicado.
+* De nuevo en Blender, dentro del panel del Shader Editor, se añadirán tantas texturas de imagen como paletas de color se hayan preparado. En cada nuevo nodo de textura de imagen se abrirá una de las nuevas imágenes generadas en QGIS, y deberá conectarse al nodo **PrincipledBSDF** mediante el conector Color > Base color.
+* Por lo que respecta a la cámara, antes de renderizar la nueva escena, si se quiere mantener una cámara zenital y añadir una nueva cámara de perspectiva, puede hacerse desde el menú Add > Camera.
+* Add > Converter > Color ramp
+
+### 7.2.7 Añadir una imágen aérea, y otros elementos sobre el relieve
+* Del mismo modo que puede configurarse una paleta de colores
 
 
 ![escenario](/image/escenario.png)
