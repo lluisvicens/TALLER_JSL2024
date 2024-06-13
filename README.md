@@ -298,7 +298,7 @@ lidR::plot_dtm3d(mds_pitfree)
 
 ![DSM2](/image/dsm2.png)
 
-¿Se detecta la presencia de ruido? En caso afirmativo, puede utilizarse por ejemplo, la función **_classify_noise()_** y a continuación, filtrar de nuevo (**_filter_poi()_**)los puntos etiquetados como ruido, antes de generar nuevamente el modelo digital de superficie (**_grid_canopy()_**).
+¿Se detecta la presencia de ruido? En caso afirmativo, puede utilizarse por ejemplo, la función **_classify_noise()_** y a continuación, filtrar de nuevo (**_filter_poi()_**) los puntos etiquetados como ruido, antes de generar nuevamente el modelo digital de superficie (**_grid_canopy()_**).
 
 ## 5. Visualizaciones 3D en R
 
